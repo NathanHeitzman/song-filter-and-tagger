@@ -7,7 +7,7 @@ web downloads) for high-accuracy metadata tagging and MusicBrainz API lookups.
 """
 import re
 import os
-import noiseWords
+import resources.noiseWords as noiseWords
 
 #use regex to add/match all song titles to one of 2 lists
 #ready_to_parse -> in the correct format <artist> - <song title>
