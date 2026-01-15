@@ -1,5 +1,17 @@
+"""
+MP3 Metadata Tagging Orchestrator
+
+This script automates the process of updating ID3 tags for MP3 files. 
+It scans a designated directory, filters for valid filenames, cleans 
+the strings to extract metadata, and writes the 'Artist' and 'Title' 
+tags directly to the file using the Mutagen library.
+
+Prerequisites:
+    - Files should be located in the './songs' directory.
+"""
+
 import os
-import filterTitleFormats
+import scripts.filterTitleFormats as filterTitleFormats
 from mutagen.mp3 import MP3
 from mutagen.easyid3 import ID3, EasyID3
 

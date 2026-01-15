@@ -1,3 +1,17 @@
+"""
+MusicBrainz API Connector
+
+This module handles communication with the MusicBrainz Web Service (XML/JSON). 
+It uses a Lucene-based search query to locate recordings and retrieve 
+metadata, which can then be used to fetch album art or update ID3 tags.
+
+Note:
+    MusicBrainz requires a descriptive 'User-Agent' header, including a 
+    contact email, to identify your application. This script expects a .env 
+    file containing an EMAIL_ADDRESS variable, though it can be hardcoded 
+    directly into the script if preferred.
+"""
+
 import requests
 import json
 import os

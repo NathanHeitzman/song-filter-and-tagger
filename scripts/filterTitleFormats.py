@@ -1,4 +1,9 @@
-"""Helper Functions for song parser script
+"""
+Helper Functions for Music Metadata Parser
+
+This module provides utility functions for filtering and cleaning file names 
+from local directories. It is designed to prepare raw filenames (often from 
+web downloads) for high-accuracy metadata tagging and MusicBrainz API lookups.
 """
 import re
 import os
