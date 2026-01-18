@@ -15,12 +15,13 @@ Note:
 import requests
 import json
 import os
+import re
 from dotenv import load_dotenv
+from datetime import datetime
 
 #load personal email address to be sent to musicbrainz for communication
 load_dotenv()
 email_address = os.getenv("EMAIL_ADDRESS")
-
 HEADERS = {
     "User-Agent": f"Tagger/1.0 ({email_address})",
     "From": email_address
@@ -55,7 +56,16 @@ def filter_recordings(json: dict) -> list[dict]:
             release_group = release.get("release-group", {}) 
             if release_group.get("primary-type", "") == "Album":
                 valid_releases.append(release)
-    return valid_releases
+    
+    official_releases = [release for release in valid_releases if release.get("status") == "Official"]
+    
+    dates = []
+    for release in official_releases:
+        current_date = (release.get("date", "9999-99-99"))
+        dates.append(parse_date(current_date))
+    sorted_dates = dates.sort(reverse=True) 
+    
+    return sorted_dates
 
 def filter_file_recordings(filePath: str) -> list[dict] | bool:
     try:
@@ -69,3 +79,16 @@ def filter_file_recordings(filePath: str) -> list[dict] | bool:
     except FileNotFoundError:
         print("One or more files not found")
         return False
+
+# example date: "2009-03-24"
+def parse_date(date: str) -> datetime:
+    print(f"parsing: {date}")
+    if re.match(r"\d{4}-\d{2}-\d{2}", date):
+        year = int(date[:4])
+        month = int(date[5:7])
+        day = int(date[8:])
+        return datetime(year,month,day)
+    else:
+        return datetime(9999,12,30)
+    
+filter_file_recordings("./jsonResponse.json")
