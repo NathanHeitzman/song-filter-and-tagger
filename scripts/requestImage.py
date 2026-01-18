@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 #load personal email address to be sent to musicbrainz for communication
 load_dotenv()
 email_address = os.getenv("EMAIL_ADDRESS")
+
 HEADERS = {
     "User-Agent": f"Tagger/1.0 ({email_address})",
     "From": email_address
@@ -35,12 +36,36 @@ def request_image(artist: str, song_title: str, write_to_file: bool) -> str | bo
         return False
     
     data = response.json()
-    recording = data["recordings"][0]
+    recording = data["recordings"]
     
     if write_to_file:
-        json_string = json.dumps(recording,indent=4)
+        json_string = json.dumps(data,indent=4)
         with open("jsonResponse.json", "w") as json_file:
             json_file.write(json_string)
+    
     return recording
-
 #request_image("Radiohead","Creep", True)
+
+#Look through every recording in JSON and return all releases with
+#a primary type of album 
+def filter_recordings(json: dict) -> list[dict]:
+    valid_releases = []
+    for recording in json.get("recordings", []):
+        for release in recording.get("releases", []):
+            release_group = release.get("release-group", {}) 
+            if release_group.get("primary-type", "") == "Album":
+                valid_releases.append(release)
+    return valid_releases
+
+def filter_file_recordings(filePath: str) -> list[dict] | bool:
+    try:
+        with open(filePath, "r") as json_file, open("filtered.json", "w") as filtered_json:
+            json_data = json.load(json_file)
+            valid_releases = filter_recordings(json_data)
+            json_string = json.dumps(valid_releases, indent=4)
+            filtered_json.write(json_string)
+        return valid_releases
+    
+    except FileNotFoundError:
+        print("One or more files not found")
+        return False
