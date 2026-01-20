@@ -27,6 +27,7 @@ HEADERS = {
     "From": email_address
 }
 
+#request an album cover from the MusicBrainz API
 def request_image(artist: str, song_title: str, write_to_file: bool) -> str | bool:
     url = f"https://musicbrainz.org/ws/2/recording/"
     query = f'recording:"{song_title}" AND artist:"{artist}"'
@@ -57,8 +58,10 @@ def filter_recordings(json: dict) -> list[dict]:
             if release_group.get("primary-type", "") == "Album":
                 valid_releases.append(release)
     
+    #Throw out releases that do not have a status of official
     official_releases = [release for release in valid_releases if release.get("status") == "Official"]
     
+    #Sort the datetime objects
     dates = []
     for release in official_releases:
         current_date = (release.get("date", "9999-99-99"))
@@ -67,6 +70,7 @@ def filter_recordings(json: dict) -> list[dict]:
     
     return sorted_dates
 
+#takes a filepath and filters out garbadge releases for a selected song
 def filter_file_recordings(filePath: str) -> list[dict] | bool:
     try:
         with open(filePath, "r") as json_file, open("filtered.json", "w") as filtered_json:
@@ -80,6 +84,7 @@ def filter_file_recordings(filePath: str) -> list[dict] | bool:
         print("One or more files not found")
         return False
 
+# parse a given date string to a datetime object
 # example date: "2009-03-24"
 def parse_date(date: str) -> datetime:
     print(f"parsing: {date}")
